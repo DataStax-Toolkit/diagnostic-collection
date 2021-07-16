@@ -153,12 +153,12 @@ function debug {
 }
 
 function get_node_ip {
-    CONN_ADDR="$(grep -E '^(native_transport_broadcast_address|broadcast_rpc_address): ' "$CONF_DIR/cassandra.yaml" |sed -e 's|^[^:]*:[ ]*\([^ ]*\)[ ]*$|\1|'|head -n 1|tr -d "'")"
+    CONN_ADDR="$(grep -E '^(native_transport_broadcast_address|broadcast_rpc_address): ' "$CONF_DIR/cassandra.yaml" |sed -e 's|^[^:]*:[ ]*\([^ ]*\)[ ]*$|\1|'|head -n 1|tr -d "'\"")"
     if [ -z "$CONN_ADDR" ]; then
-        CONN_ADDR="$(grep -E '^(native_transport_address|rpc_address): ' "$CONF_DIR/cassandra.yaml" |sed -e 's|^[^:]*:[ ]*\([^ ]*\)[ ]*$|\1|'|head -n 1|tr -d "'")"
+        CONN_ADDR="$(grep -E '^(native_transport_address|rpc_address): ' "$CONF_DIR/cassandra.yaml" |sed -e 's|^[^:]*:[ ]*\([^ ]*\)[ ]*$|\1|'|head -n 1|tr -d "'\"")"
     fi
     if [ -z "$CONN_ADDR" ]; then
-        IFACE="$(grep -E '^(native_transport_interface|rpc_interface): ' "$CONF_DIR/cassandra.yaml" |sed -e 's|^[^:]*:[ ]*\([^ ]*\)[ ]*$|\1|'|head -n 1|tr -d "'")"
+        IFACE="$(grep -E '^(native_transport_interface|rpc_interface): ' "$CONF_DIR/cassandra.yaml" |sed -e 's|^[^:]*:[ ]*\([^ ]*\)[ ]*$|\1|'|head -n 1|tr -d "'\"")"
         if [ -n "$IFACE" ]; then
             if [ "$HOST_OS" = "Linux" ]; then
                 CONN_ADDR="$(ifconfig "$IFACE"|grep 'inet addr:'|sed -e 's|^.*inet addr:\([^ ]*\) .*[ ]*$|\1|')"
@@ -168,9 +168,9 @@ function get_node_ip {
         fi
     fi
     # extract listen address
-    NODE_ADDR="$(grep -e '^broadcast_address: ' "$CONF_DIR/cassandra.yaml" |sed -e 's|^[^:]*:[ ]*\([^ ]*\)[ ]*$|\1|'|tr -d "'")"
+    NODE_ADDR="$(grep -e '^broadcast_address: ' "$CONF_DIR/cassandra.yaml" |sed -e 's|^[^:]*:[ ]*\([^ ]*\)[ ]*$|\1|'|tr -d "'\"")"
     if [ -z "$NODE_ADDR" ]; then
-        IFACE="$(grep -E '^listen_interface: ' "$CONF_DIR/cassandra.yaml" |sed -e 's|^[^:]*:[ ]*\([^ ]*\)[ ]*$|\1|'|tr -d "'")"
+        IFACE="$(grep -E '^listen_interface: ' "$CONF_DIR/cassandra.yaml" |sed -e 's|^[^:]*:[ ]*\([^ ]*\)[ ]*$|\1|'|tr -d "'\"")"
         if [ -n "$IFACE" ]; then
             if [ "$HOST_OS" = "Linux" ]; then
                 NODE_ADDR="$(ifconfig "$IFACE"|grep 'inet addr:'|sed -e 's|^.*inet addr:\([^ ]*\) .*[ ]*$|\1|')"
@@ -179,7 +179,7 @@ function get_node_ip {
             fi
         fi
         if [ -z "$NODE_ADDR" ]; then
-            NODE_ADDR="$(grep -e '^listen_address: ' "$CONF_DIR/cassandra.yaml" |sed -e 's|^[^:]*:[ ]*\([^ ]*\)[ ]*$|\1|'|tr -d "'")"
+            NODE_ADDR="$(grep -e '^listen_address: ' "$CONF_DIR/cassandra.yaml" |sed -e 's|^[^:]*:[ ]*\([^ ]*\)[ ]*$|\1|'|tr -d "'\"")"
             if [ -z "$NODE_ADDR" ] || [ "$NODE_ADDR" = "127.0.0.1" ] || [ "$NODE_ADDR" = "localhost" ]; then
                 #            echo "Can't detect node's address from cassandra.yaml, or it's set to localhost. Trying to use the 'hostname'"
                 if [ "$HOST_OS" = "Linux" ]; then
@@ -198,7 +198,7 @@ function get_node_ip {
         echo "Can't detect node's address..."
         exit 1
     fi
-    TSTR="$(grep -e '^native_transport_port: ' "$CONF_DIR/cassandra.yaml" |sed -e 's|^[^:]*:[ ]*\([^ ]*\)$|\1|'|tr -d "'")"
+    TSTR="$(grep -e '^native_transport_port: ' "$CONF_DIR/cassandra.yaml" |sed -e 's|^[^:]*:[ ]*\([^ ]*\)$|\1|'|tr -d "'\"")"
     if [ -n "$TSTR" ]; then
         CONN_PORT="$TSTR"
     fi
@@ -779,7 +779,7 @@ function collect_data {
     fi
 
     # Collect metrics from JMX for OSS C* and DDAC
-    if [ -n "$IS_COSS" ] ; then 
+    if [ -n "$IS_COSS" ] ; then
         if [ "$MODE" != "light" ]; then
             $MAYBE_RUN_WITH_TIMEOUT java -jar ~/sjk-plus.jar mxdump $JMX_OPTS > "$DATA_DIR/jmx_dump.json" 2>&1
         fi
@@ -884,7 +884,7 @@ function collect_insights {
                                 if [ -n "$INS_DIR" ] && [ -d "$INS_DIR" ] && [ -d "$INS_DIR/insights" ]; then
 	                            INSIGHTS_DIR="$INS_DIR/insights "
                                 fi
-                                break	    
+                                break
                             fi
                         fi
                 esac
@@ -913,7 +913,7 @@ function collect_insights {
             fi
         fi
     fi
-    
+
     if [ ! -d "$INSIGHTS_DIR" ]; then
         echo "Can't find find directory with insights data, or it doesn't exist! $INSIGHTS_DIR"
         echo "Please pass directory name via -I option (see help)"
@@ -1056,7 +1056,7 @@ function adjust_nodetool_params {
             echo "JMX isn't available at $jmx_host:$jmx_port"
         fi
     fi
-        
+
     if [ "$jmx_port" != "7199" ]; then
         NT_OPTS="$NT_OPTS -p $jmx_port"
     fi
@@ -1092,3 +1092,4 @@ create_archive
 cleanup
 
 cd "$OLDWD" || exit 1
+
